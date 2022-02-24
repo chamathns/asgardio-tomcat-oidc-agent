@@ -57,7 +57,7 @@ The structure of the oidc-sample-app we are configuring would be as follows:
    These properties are required for the OIDC SDK to communicate with the WSO2 Identity Server.
 
 3. Next, we need to find and set JKS properties required for IS server communication.  For that, create a file named jks
-   .properties in the resources directory. The content of the jks.properties file should be similar to:
+   .properties in the `<APP_HOME>/WEB-INF/classes` directory. The content of the jks.properties file should be similar to:
    
    ```
    keystorename=wso2carbon.jks
@@ -151,24 +151,14 @@ In the sample we are using, if there is no active session in place, we would red
        
 Next, by adding the following snippets, we would be able to retrieve the user claims as provided by the Identity Provider.
 
+
       <%
-          final HttpSession currentSession = request.getSession(false);
-          final SessionContext sessionContext = (SessionContext)
-                  currentSession.getAttribute(SSOAgentConstants.SESSION_CONTEXT);
-          final String idToken = sessionContext.getIdToken().getParsedString();
-          
-              String name = null;
-              Map<String, Object> customClaimValueMap = new HashMap<>();
-              
-              if (idToken != null) {
-                  try {
-                      final User user = sessionContext.getUser();
-                      customClaimValueMap = user.getAttributes();
-                      name = user.getSubject();
-                  } catch (Exception e) {
-                      e.printStackTrace();
-                  }
-              }
+         // Retrieve the current session.
+         final HttpSession currentSession = request.getSession(false);   // Logged in session context.
+         final SessionContext sessionContext = (SessionContext)
+                    currentSession.getAttribute(SSOAgentConstants.SESSION_CONTEXT);   // Logged in user.
+         final User user = sessionContext.getUser();   // Attributes of the logged in user.
+         Map<String, Object> customClaimValueMap = user.getAttributes();
       %>
       
 2. Then, we would use the `customClaimValueMap` in the **<APP_HOME>/home.jsp** to display the user attributes via a 
